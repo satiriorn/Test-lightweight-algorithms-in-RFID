@@ -6,7 +6,8 @@
 PN532_SPI pn532spi(SPI, 10);
 NfcAdapter nfc = NfcAdapter(pn532spi);
 
-char key_message[2][16] = {"D4eR1vG7wX9zY2sL", "X5fG2hJ7kL9mN3pQ"};
+char key_message[2][17] = {"D4eR1vG7wX9zY2sL", "X5fG2hJ7kL9mN3pQ"};
+unsigned long TimeEncryption;
 char hex[256];
 uint8_t data[256];
 int start = 0;
@@ -188,7 +189,6 @@ char* SHA256(const char* data)
 void setup()
 {
   Serial.begin(9600);
-  Serial.println("NDEF Formatter");
   nfc.begin();
 }
 
@@ -196,9 +196,16 @@ void loop()
 {
     Serial.println("\nPlace an unformatted Mifare Classic tag on the reader.");
     if (nfc.tagPresent()) {
+        unsigned long Time = micros();
         NdefMessage message = NdefMessage();
         create_message(&message);  
         boolean success = nfc.write(message); 
+        Serial.print("Time Encryption: ");
+        Serial.print(TimeEncryption);Serial.print("us ");
+        Time = micros() - Time;
+        Serial.print("Time taken for encryption and write: ");
+        Serial.print(Time);Serial.print("us");
+        Serial.println();
         if (success) {
             Serial.println("Success write!"); // if it works you will see this message 
         } else {
@@ -209,9 +216,11 @@ void loop()
 }
 
 void create_message(NdefMessage* message){
+    TimeEncryption = micros();
     for(int i = 0; i<=1;i++){
           char *data_result = SHA256(key_message[i]);
           Serial.println(data_result);
           message->addTextRecord(data_result);
       }
+    TimeEncryption = micros() - TimeEncryption;
   }

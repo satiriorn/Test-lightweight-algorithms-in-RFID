@@ -35,32 +35,38 @@ void readNFC() {
     tag.print();
     NdefMessage message = tag.getNdefMessage();
     int recordCount = message.getRecordCount();
-        for (uint8_t i = 0; i < recordCount; i++)
-        {
-            NdefRecord record = message.getRecord(i);
-            uint8_t payloadLength = record.getPayloadLength();
-            char payload[payloadLength];
-            record.getPayload(payload);
-            int c = (record.getType()=="U")? 1 : 3;
-            for (uint8_t x = 0; c < payloadLength; c++)
-            {
-                data[x] = payload[c];
-                x++;
-            }
-            Serial.println(data);
-            if(data==result_hash[i])
-            {
-              correct_message+=50;
-              lcd.print("value:");
-              lcd.print(correct_message+1);
-              if(correct_message>=99){
-                  lcd.clear();
-                  lcd.print("Gate open");
-                  delay(2000);
-                }
-              
-            }
-        }
+    unsigned long Time = micros();
+    for (uint8_t i = 0; i < recordCount; i++)
+      {
+          NdefRecord record = message.getRecord(i);
+          uint8_t payloadLength = record.getPayloadLength();
+          char payload[payloadLength];
+          record.getPayload(payload);
+          int c = (record.getType()=="U")? 1 : 3;
+          for (uint8_t x = 0; c < payloadLength; c++)
+          {
+              data[x] = payload[c];
+              x++;
+          }
+          Serial.println(data);
+          /*
+          if(data==result_hash[i])
+          {
+            correct_message+=50;
+            lcd.print("value:");
+            lcd.print(correct_message+1);
+            if(correct_message>=99){
+                lcd.clear();
+                lcd.print("Gate open");
+                delay(2000);
+              }
+            
+          }
+          */
+      }
+      Time = micros() - Time;
+      Serial.print("Time taken for decryption and read: ");
+      Serial.print(Time);Serial.print("us");
       delay(2000);
       lcd.clear();
       lcd.print("Enter key");
