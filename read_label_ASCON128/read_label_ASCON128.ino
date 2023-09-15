@@ -5,13 +5,12 @@
 #include <CryptoLW.h>
 #include <Crypto.h>
 #include <Ascon128.h>
-#include <string.h>
 #include <LiquidCrystal_I2C.h>
 
 uint8_t correct_message = 0;
 PN532_SPI interface(SPI, 10); // create a PN532 SPI interface with the SPI CS terminal located at digital pin 10
 NfcAdapter nfc = NfcAdapter(interface); // create an NFC adapter object
-char data[16];
+char data[17];
 
 Ascon128 ascon; //Initialises Ascon module
 uint8_t key[16] = {0x72, 0xfd, 0x18, 0xde, 0xbd, 0xee, 0x86, 0x13,
@@ -30,7 +29,7 @@ char cipherdata[2][17] = {"D4eR1vG7wX9zY2sL", "X5fG2hJ7kL9mN3pQ"};
 
 uint8_t ndefBuf[120];
 
-String decryptData (uint8_t *cipherData, int sizeOfArray){
+char* decryptData (uint8_t *cipherData, int sizeOfArray){
     //ascon.clear();
     unsigned long StartTime = micros();
     uint8_t buffer1[32];
@@ -83,7 +82,7 @@ void readNFC() {
               x++;
           }
           Serial.println(data);
-          String decryptedText = decryptData(data, sizeof(data)); //Decrypts the Byte Array to a String format
+          char* decryptedText = decryptData(data, sizeof(data)); //Decrypts the Byte Array to a String format
           Serial.println(decryptedText);
           /*
           if(data==cipherdata[i])

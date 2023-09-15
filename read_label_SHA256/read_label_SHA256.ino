@@ -2,7 +2,6 @@
 #include <PN532_SPI.h>
 #include <PN532.h>
 #include <NfcAdapter.h>
-#include <AESLib.h>
 #include <LiquidCrystal_I2C.h>
 
 uint8_t correct_message = 0;
